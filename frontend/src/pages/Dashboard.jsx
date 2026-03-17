@@ -19,6 +19,7 @@ function Dashboard() {
   });
 
   const [activity, setActivity] = useState([]);
+  const BASE_URL = "https://smart-library-seat-reservation-system.onrender.com/api";
 
   // ================= SOCKET CONNECTION =================
 
@@ -90,7 +91,7 @@ function Dashboard() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "http://localhost:5000/api/bookings/dashboard-stats",
+        ${BASE_URL}/api/bookings/dashboard-stats",
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -145,7 +146,7 @@ function Dashboard() {
             {profileImage && (
 
               <img
-                src={`http://localhost:5000/uploads/${profileImage}`}
+                src={`${BASE_URL}/uploads/${profileImage}`}
                 alt="Profile"
                 className="w-14 h-14 rounded-full object-cover border-2 border-violet-500 shadow-lg"
               />
