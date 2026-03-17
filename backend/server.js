@@ -11,20 +11,36 @@ const adminRoutes = require("./routes/adminRoutes");
 const app = express();
 const server = http.createServer(app);
 
-app.use(cors());
+// ✅ FRONTEND URL (CHANGE THIS TO YOUR VERCEL URL)
+const FRONTEND_URL = "https://smart-library-seat-git-1d9a1d-govardhanrajulapati073s-projects.vercel.app";
+
+// ================= CORS FIX =================
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    FRONTEND_URL
+  ],
+  credentials: true
+}));
+
 app.use(express.json());
 
+// ================= ROUTES =================
 app.use("/api/auth", authRoutes);
 app.use("/api/seats", seatRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/uploads", express.static("uploads"));
 
-
+// ================= SOCKET.IO FIX =================
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173","http://localhost:3000"],
-    methods: ["GET", "POST"]
+    origin: [
+      "http://localhost:5173",
+      FRONTEND_URL
+    ],
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
@@ -41,6 +57,9 @@ io.on("connection", (socket) => {
 
 });
 
-server.listen(5000, () => {
-  console.log("Server running on port 5000");
+// ================= PORT FIX FOR RENDER =================
+const PORT = process.env.PORT || 5000;
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
