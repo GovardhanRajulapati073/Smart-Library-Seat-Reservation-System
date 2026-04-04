@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs"); // ✅ FIXED (use bcryptjs)
 const jwt = require("jsonwebtoken");
 const pool = require("../config/db");
 const crypto = require("crypto");
@@ -11,7 +11,7 @@ const multer = require("multer");
 const storage = multer.diskStorage({
   destination: "uploads/",
   filename: (req, file, cb) => {
-    cb(null, Date.now() + file.originalname);
+    cb(null, Date.now() + "-" + file.originalname);
   }
 });
 
@@ -24,10 +24,18 @@ router.post("/register", async (req, res) => {
 
     let { name, email, password, role } = req.body;
 
+    // ✅ VALIDATION (VERY IMPORTANT)
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        message: "Name, Email and Password are required"
+      });
+    }
+
     if (!role) {
       role = "student";
     }
 
+    // ✅ CHECK EXISTING USER
     const existingUser = await pool.query(
       "SELECT * FROM users WHERE email=$1",
       [email]
@@ -39,17 +47,21 @@ router.post("/register", async (req, res) => {
       });
     }
 
+    // ✅ HASH PASSWORD
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // ✅ INSERT USER
     const newUser = await pool.query(
-      "INSERT INTO users (name,email,password,role) VALUES ($1,$2,$3,$4) RETURNING id,name,email,role",
+      `INSERT INTO users (name, email, password, role)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, name, email, role`,
       [name, email, hashedPassword, role]
     );
 
-    res.json(newUser.rows[0]);
+    res.status(201).json(newUser.rows[0]);
 
   } catch (err) {
-    console.log(err.message);
+    console.log("REGISTER ERROR:", err); // ✅ FULL ERROR
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -60,6 +72,13 @@ router.post("/login", async (req, res) => {
   try {
 
     const { email, password } = req.body;
+
+    // ✅ VALIDATION
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and Password required"
+      });
+    }
 
     const user = await pool.query(
       "SELECT * FROM users WHERE email=$1",
@@ -88,7 +107,7 @@ router.post("/login", async (req, res) => {
         id: user.rows[0].id,
         role: user.rows[0].role
       },
-      "secretkey",
+      process.env.JWT_SECRET || "secretkey",
       { expiresIn: "24h" }
     );
 
@@ -101,7 +120,7 @@ router.post("/login", async (req, res) => {
     });
 
   } catch (err) {
-    console.log(err.message);
+    console.log("LOGIN ERROR:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -109,10 +128,15 @@ router.post("/login", async (req, res) => {
 
 // ================= FORGOT PASSWORD =================
 router.post("/forgot-password", async (req, res) => {
-
   try {
 
     const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        message: "Email is required"
+      });
+    }
 
     const user = await pool.query(
       "SELECT * FROM users WHERE email=$1",
@@ -133,20 +157,14 @@ router.post("/forgot-password", async (req, res) => {
     );
 
     res.json({
-      message: "Reset link generated",
-      token: token
+      message: "Reset token generated",
+      token
     });
 
   } catch (err) {
-
-    console.log(err.message);
-
-    res.status(500).json({
-      message: "Server error"
-    });
-
+    console.log("FORGOT ERROR:", err);
+    res.status(500).json({ message: "Server error" });
   }
-
 });
 
 
@@ -154,8 +172,14 @@ router.post("/forgot-password", async (req, res) => {
 router.post("/reset-password/:token", async (req, res) => {
   try {
 
-    const token = req.params.token;
     const { password } = req.body;
+    const token = req.params.token;
+
+    if (!password) {
+      return res.status(400).json({
+        message: "Password is required"
+      });
+    }
 
     const user = await pool.query(
       "SELECT * FROM users WHERE reset_token=$1",
@@ -175,25 +199,19 @@ router.post("/reset-password/:token", async (req, res) => {
       [hashedPassword, token]
     );
 
-    return res.status(200).json({
+    res.json({
       message: "Password updated successfully"
     });
 
   } catch (err) {
-
-    console.log("Reset error:", err.message);
-
-    return res.status(500).json({
-      message: "Reset failed"
-    });
-
+    console.log("RESET ERROR:", err);
+    res.status(500).json({ message: "Reset failed" });
   }
 });
 
 
 // ================= GET USER PROFILE =================
 router.get("/profile/:id", async (req, res) => {
-
   try {
 
     const user = await pool.query(
@@ -204,18 +222,14 @@ router.get("/profile/:id", async (req, res) => {
     res.json(user.rows[0]);
 
   } catch (err) {
-
-    console.log(err.message);
-    res.status(500).send("Server error");
-
+    console.log("PROFILE ERROR:", err);
+    res.status(500).json({ message: "Server error" });
   }
-
 });
 
 
-// ================= UPDATE USER PROFILE + IMAGE =================
+// ================= UPDATE PROFILE =================
 router.put("/profile/:id", upload.single("profile_image"), async (req, res) => {
-
   try {
 
     const {
@@ -267,13 +281,9 @@ router.put("/profile/:id", upload.single("profile_image"), async (req, res) => {
     res.json({ message: "Profile updated successfully" });
 
   } catch (err) {
-
-    console.log(err.message);
+    console.log("UPDATE ERROR:", err);
     res.status(500).json({ message: "Error updating profile" });
-
   }
-
 });
-
 
 module.exports = router;
