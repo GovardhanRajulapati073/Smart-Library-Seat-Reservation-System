@@ -14,7 +14,7 @@ export const UserProvider = ({ children }) => {
     if (userId) {
 
       axios
-        .get(`http://localhost:5000/api/auth/profile/${userId}`)
+        .get(`https://smart-library-seat-reservation-system.onrender.com/api/auth/profile/${userId}`)
         .then((res) => {
 
           setUser(res.data);
