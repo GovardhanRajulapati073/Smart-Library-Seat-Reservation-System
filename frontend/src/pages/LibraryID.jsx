@@ -14,7 +14,7 @@ function LibraryID() {
   useEffect(() => {
 
     axios
-      .get(`http://localhost:5000/api/auth/profile/${userId}`)
+      .get(`https://smart-library-seat-reservation-system.onrender.com/api/auth/profile/${userId}`)
       .then((res) => {
         setUser(res.data);
       });
@@ -88,7 +88,7 @@ function LibraryID() {
 
                 <img
                   crossOrigin="anonymous"
-                  src={`http://localhost:5000/uploads/${user.profile_image}`}
+                  src={`https://smart-library-seat-reservation-system.onrender.com/uploads/${user.profile_image}`}
                   className="w-28 h-28 rounded-full border-4 border-gray-300 object-cover"
                   alt="profile"
                 />
