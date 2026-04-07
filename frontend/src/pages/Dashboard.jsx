@@ -24,7 +24,7 @@ function Dashboard() {
 
   useEffect(() => {
 
-    const socket = io("http://localhost:5000");
+    const socket = io("https://smart-library-seat-reservation-system.onrender.com");
 
     socket.on("activityFeed", (data) => {
 
@@ -62,7 +62,7 @@ function Dashboard() {
       if (!userId) return;
 
       const res = await axios.get(
-        `http://localhost:5000/api/auth/profile/${userId}`
+        `https://smart-library-seat-reservation-system.onrender.com/api/auth/profile/${userId}`
       );
 
       if (res.data.profile_image) {
@@ -90,7 +90,7 @@ function Dashboard() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "http://localhost:5000/api/bookings/dashboard-stats",
+        "https://smart-library-seat-reservation-system.onrender.com/api/bookings/dashboard-stats",
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -145,7 +145,7 @@ function Dashboard() {
             {profileImage && (
 
               <img
-                src={`http://localhost:5000/uploads/${profileImage}`}
+                src={`https://smart-library-seat-reservation-system.onrender.com/uploads/${profileImage}`}
                 alt="Profile"
                 className="w-14 h-14 rounded-full object-cover border-2 border-violet-500 shadow-lg"
               />
