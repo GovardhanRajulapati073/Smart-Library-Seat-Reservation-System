@@ -27,7 +27,7 @@ function MyBookings() {
       const userId = localStorage.getItem("userId");
 
       const res = await axios.get(
-        `http://localhost:5000/api/bookings/user/${userId}`
+        `https://smart-library-seat-reservation-system.onrender.com/api/bookings/user/${userId}`
       );
 
       setBookings(res.data);
@@ -119,7 +119,7 @@ function MyBookings() {
     try {
 
       await axios.delete(
-        `http://localhost:5000/api/bookings/cancel/${selectedCancelId}`
+        `https://smart-library-seat-reservation-system.onrender.com/api/bookings/cancel/${selectedCancelId}`
       );
 
       setShowConfirmPopup(false);
