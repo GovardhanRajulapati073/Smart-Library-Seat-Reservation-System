@@ -17,7 +17,7 @@ function Sections() {
       try {
 
         const res = await axios.get(
-          "http://localhost:5000/api/seats/section-counts"
+          "https://smart-library-seat-reservation-system.onrender.com/api/seats/section-counts"
         );
 
         const counts = {};
