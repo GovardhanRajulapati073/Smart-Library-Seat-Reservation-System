@@ -26,7 +26,7 @@ function ManageUsers() {
     try {
 
       const res = await axios.get(
-        `http://localhost:5000/api/admin/users/${role}`
+        `https://smart-library-seat-reservation-system.onrender.com/api/admin/users/${role}`
       );
 
       setUsers(res.data);
@@ -48,7 +48,7 @@ function ManageUsers() {
     try{
 
       await axios.delete(
-        `http://localhost:5000/api/admin/deleteUser/${userToDelete}`
+        `https://smart-library-seat-reservation-system.onrender.com/api/admin/deleteUser/${userToDelete}`
       );
 
       fetchUsers();
@@ -73,7 +73,7 @@ function ManageUsers() {
     try {
 
       await axios.put(
-        `http://localhost:5000/api/admin/updateUser/${editingUser.id}`,
+        `https://smart-library-seat-reservation-system.onrender.com/api/admin/updateUser/${editingUser.id}`,
         { name: newName }
       );
 
