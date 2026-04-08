@@ -11,7 +11,7 @@ const [seatLabel,setSeatLabel] = useState("");
 const [role,setRole] = useState("student");
 const [selectedSection,setSelectedSection] = useState("");
 
-const socket = io("http://localhost:5000");
+const socket = io("https://smart-library-seat-reservation-system.onrender.com");
 
 useEffect(()=>{
 fetchSections();
@@ -44,7 +44,7 @@ const fetchSections = async()=>{
 try{
 
 const res = await axios.get(
-`http://localhost:5000/api/admin/sections/${role}`
+`https://smart-library-seat-reservation-system.onrender.com/api/admin/sections/${role}`
 );
 
 setSections(res.data);
@@ -64,7 +64,7 @@ const fetchSeats = async(section="")=>{
 
 try{
 
-let url = `http://localhost:5000/api/admin/seats/${role}`;
+let url = `https://smart-library-seat-reservation-system.onrender.com/api/admin/seats/${role}`;
 
 if(section){
 url += `?section=${section}`;
@@ -98,7 +98,7 @@ return;
 try{
 
 await axios.post(
-"http://localhost:5000/api/admin/addSeat",
+"https://smart-library-seat-reservation-system.onrender.com/api/admin/addSeat",
 {
 section_id: sectionId,
 seat_label: seatLabel
@@ -133,7 +133,7 @@ if(!confirm) return;
 try{
 
 await axios.delete(
-`http://localhost:5000/api/admin/deleteSeat/${id}`
+`https://smart-library-seat-reservation-system.onrender.com/api/admin/deleteSeat/${id}`
 );
 
 fetchSeats(selectedSection);
