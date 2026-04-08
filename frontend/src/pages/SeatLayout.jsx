@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 // Socket connection
-const socket = io("http://localhost:5000");
+const socket = io("https://smart-library-seat-reservation-system.onrender.com");
 
 function SeatLayout() {
 
@@ -60,7 +60,7 @@ function SeatLayout() {
       setLoading(true);
 
       const res = await axios.get(
-        `http://localhost:5000/api/seats/${sectionId}/${selectedDate}/${timeSlot}`
+        `https://smart-library-seat-reservation-system.onrender.com/api/seats/${sectionId}/${selectedDate}/${timeSlot}`
       );
 
       setSeats(res.data);
@@ -124,7 +124,7 @@ function SeatLayout() {
       setBookingSeat(selectedSeat.id);
 
       await axios.post(
-        "http://localhost:5000/api/bookings/book",
+        "https://smart-library-seat-reservation-system.onrender.com/api/bookings/book",
         {
           user_id: userId,
           seat_id: selectedSeat.id,
