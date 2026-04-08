@@ -9,7 +9,7 @@ function ManageBookings() {
   const [search, setSearch] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
 
-  const socket = io("http://localhost:5000");
+  const socket = io("https://smart-library-seat-reservation-system.onrender.com");
 
   useEffect(() => {
     fetchBookings();
@@ -40,7 +40,7 @@ function ManageBookings() {
     try {
 
       const res = await axios.get(
-        `http://localhost:5000/api/admin/bookings/${role}`
+        `https://smart-library-seat-reservation-system.onrender.com/api/admin/bookings/${role}`
       );
 
       setBookings(res.data);
@@ -67,7 +67,7 @@ function ManageBookings() {
     try {
 
       await axios.delete(
-        `http://localhost:5000/api/admin/deleteBooking/${id}`
+        `https://smart-library-seat-reservation-system.onrender.com/api/admin/deleteBooking/${id}`
       );
 
       fetchBookings();
