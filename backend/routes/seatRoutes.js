@@ -2,15 +2,12 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../config/db");
 
-
 // =======================================
 // GET SEATS BY SECTION / DATE / TIMESLOT
 // =======================================
 
 router.get("/:sectionId/:date/:timeSlot", async (req, res) => {
-
   try {
-
     const { sectionId, date, timeSlot } = req.params;
 
     const seats = await pool.query(
@@ -37,23 +34,17 @@ router.get("/:sectionId/:date/:timeSlot", async (req, res) => {
     res.json(seats.rows);
 
   } catch (err) {
-
     console.log(err.message);
     res.status(500).json({ error: "Server error" });
-
   }
-
 });
-
 
 // =======================================
 // GET SEAT COUNTS FOR SECTIONS
 // =======================================
 
 router.get("/section-counts", async (req, res) => {
-
   try {
-
     const result = await pool.query(`
       SELECT section_id, COUNT(*) AS count
       FROM seats
@@ -64,13 +55,9 @@ router.get("/section-counts", async (req, res) => {
     res.json(result.rows);
 
   } catch (err) {
-
     console.log(err.message);
     res.status(500).json({ error: "Server error" });
-
   }
-
 });
-
 
 module.exports = router;
