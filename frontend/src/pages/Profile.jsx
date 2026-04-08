@@ -46,7 +46,7 @@ function Profile() {
   useEffect(() => {
 
     axios
-      .get(`http://localhost:5000/api/auth/profile/${userId}`)
+      .get(`https://smart-library-seat-reservation-system.onrender.com/api/auth/profile/${userId}`)
       .then((res) => {
 
         const data = res.data;
@@ -67,7 +67,7 @@ function Profile() {
         if (data.profile_image) {
 
           setPreview(
-            `http://localhost:5000/uploads/${data.profile_image}`
+            `https://smart-library-seat-reservation-system.onrender.com/uploads/${data.profile_image}`
           );
 
           setProfileImage(data.profile_image);
@@ -104,7 +104,7 @@ function Profile() {
       }
 
       const res = await axios.put(
-        `http://localhost:5000/api/auth/profile/${userId}`,
+        `https://smart-library-seat-reservation-system.onrender.com/api/auth/profile/${userId}`,
         formData,
         {
           headers: {
