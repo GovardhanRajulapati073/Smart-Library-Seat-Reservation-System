@@ -31,7 +31,7 @@ function Sidebar() {
         <img
           src={
             user?.profile_image
-              ? `http://localhost:5000/uploads/${user.profile_image}`
+              ? `https://smart-library-seat-reservation-system.onrender.com/uploads/${user.profile_image}`
               : "https://i.imgur.com/6VBx3io.png"
           }
           className="w-20 h-20 rounded-full mx-auto object-cover border-2 border-gray-700"
