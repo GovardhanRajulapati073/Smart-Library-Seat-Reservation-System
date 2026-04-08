@@ -39,7 +39,7 @@ const [activity,setActivity] = useState([]);
 
 useEffect(()=>{
 
-const socket = io("http://localhost:5000");
+const socket = io("https://smart-library-seat-reservation-system.onrender.com");
 
 socket.on("activityFeed",(data)=>{
 
@@ -65,27 +65,27 @@ return ()=>socket.disconnect();
 /* ======================= API CALLS ======================= */
 
 const fetchStats = async()=>{
-const res = await axios.get("http://localhost:5000/api/admin/libraryStats");
+const res = await axios.get("https://smart-library-seat-reservation-system.onrender.com/api/admin/libraryStats");
 setStats(res.data);
 };
 
 const fetchSections = async()=>{
-const res = await axios.get("http://localhost:5000/api/admin/sectionOccupancy");
+const res = await axios.get("https://smart-library-seat-reservation-system.onrender.com/api/admin/sectionOccupancy");
 setSections(res.data);
 };
 
 const fetchRoleStats = async()=>{
-const res = await axios.get("http://localhost:5000/api/admin/bookingRoleStats");
+const res = await axios.get("https://smart-library-seat-reservation-system.onrender.com/api/admin/bookingRoleStats");
 setRoleStats(res.data);
 };
 
 const fetchDailyStats = async()=>{
-const res = await axios.get("http://localhost:5000/api/admin/dailyBookings");
+const res = await axios.get("https://smart-library-seat-reservation-system.onrender.com/api/admin/dailyBookings");
 setDailyStats(res.data);
 };
 
 const fetchHeatmap = async()=>{
-const res = await axios.get("http://localhost:5000/api/admin/sectionUsageHeatmap");
+const res = await axios.get("https://smart-library-seat-reservation-system.onrender.com/api/admin/sectionUsageHeatmap");
 setHeatmap(res.data);
 };
 
