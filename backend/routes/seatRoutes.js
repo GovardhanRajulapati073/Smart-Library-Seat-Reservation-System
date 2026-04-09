@@ -4,12 +4,12 @@ const pool = require("../config/db");
 
 
 // =======================================
-// ✅ TEST ROUTE (CHECK DB CONNECTION)
+// ✅ TEST ROUTE
 // =======================================
 router.get("/test", async (req, res) => {
   try {
-    const data = await pool.query("SELECT * FROM seats LIMIT 5");
-    res.json(data.rows);
+    const result = await pool.query("SELECT * FROM seats LIMIT 5");
+    res.json(result.rows);
   } catch (err) {
     console.error("TEST ERROR:", err.message);
     res.status(500).json({ error: err.message });
@@ -18,7 +18,7 @@ router.get("/test", async (req, res) => {
 
 
 // =======================================
-// ✅ GET SEATS BY SECTION / DATE / TIMESLOT
+// ✅ GET SEATS WITH BOOKING STATUS
 // =======================================
 router.get("/:sectionId/:date/:timeSlot", async (req, res) => {
   try {
@@ -52,7 +52,7 @@ router.get("/:sectionId/:date/:timeSlot", async (req, res) => {
     res.json(result.rows);
 
   } catch (err) {
-    console.error("🔥 SEAT FETCH ERROR:", err);
+    console.error("🔥 SEAT ERROR:", err);
     res.status(500).json({
       error: "Failed to fetch seats",
       details: err.message
@@ -62,14 +62,54 @@ router.get("/:sectionId/:date/:timeSlot", async (req, res) => {
 
 
 // =======================================
-// ✅ GET SEAT COUNTS FOR EACH SECTION
+// ✅ CREATE BOOKING (VERY IMPORTANT)
+// =======================================
+router.post("/book", async (req, res) => {
+  try {
+    const { user_id, seat_id, booking_date, time_slot } = req.body;
+
+    // Check if seat already booked
+    const existing = await pool.query(
+      `
+      SELECT * FROM bookings
+      WHERE seat_id = $1
+      AND booking_date = $2
+      AND time_slot = $3
+      AND status = 'booked'
+      `,
+      [seat_id, booking_date, time_slot]
+    );
+
+    if (existing.rows.length > 0) {
+      return res.status(400).json({ message: "Seat already booked" });
+    }
+
+    // Insert booking
+    const result = await pool.query(
+      `
+      INSERT INTO bookings (user_id, seat_id, booking_date, time_slot, status)
+      VALUES ($1, $2, $3, $4, 'booked')
+      RETURNING *
+      `,
+      [user_id, seat_id, booking_date, time_slot]
+    );
+
+    res.json(result.rows[0]);
+
+  } catch (err) {
+    console.error("🔥 BOOKING ERROR:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// =======================================
+// ✅ GET SECTION SEAT COUNTS
 // =======================================
 router.get("/section-counts", async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT 
-        section_id, 
-        COUNT(*) AS total_seats
+      SELECT section_id, COUNT(*) AS total_seats
       FROM seats
       GROUP BY section_id
       ORDER BY section_id
@@ -78,28 +118,7 @@ router.get("/section-counts", async (req, res) => {
     res.json(result.rows);
 
   } catch (err) {
-    console.error("🔥 COUNT ERROR:", err);
-    res.status(500).json({
-      error: "Failed to fetch section counts",
-      details: err.message
-    });
-  }
-});
-
-
-// =======================================
-// ✅ OPTIONAL: GET ALL SEATS (DEBUG)
-// =======================================
-router.get("/all", async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT * FROM seats ORDER BY id
-    `);
-
-    res.json(result.rows);
-
-  } catch (err) {
-    console.error("🔥 ALL SEATS ERROR:", err);
+    console.error("COUNT ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
