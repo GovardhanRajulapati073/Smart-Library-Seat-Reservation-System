@@ -284,7 +284,7 @@ router.get("/dashboard-stats", async (req, res) => {
         `
         SELECT COUNT(*) FROM bookings
         WHERE user_id = $1
-        AND status = 'booked'
+        AND status IN = ('booked' , 'confirmed')
         `,
         [userId]
       );
