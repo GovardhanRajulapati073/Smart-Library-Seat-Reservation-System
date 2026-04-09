@@ -42,22 +42,25 @@ function Dashboard() {
 
   useEffect(() => {
 
-    if (!user) return;
+  const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
 
-    fetchDashboardStats();
-    fetchProfileImage();
+  if (!token || !userId) return;
 
-  }, [user]);
+  fetchDashboardStats(token);
+  fetchProfileImage(userId);
+
+  }, []);
 
 
 
   // ================= PROFILE IMAGE =================
 
-  const fetchProfileImage = async () => {
+  const fetchProfileImage = async (userId) => {
 
     try {
 
-      const userId = localStorage.getItem("userId");
+      
 
       if (!userId) return;
 
@@ -83,11 +86,11 @@ function Dashboard() {
 
   // ================= DASHBOARD STATS =================
 
-  const fetchDashboardStats = async () => {
+  const fetchDashboardStats = async (token) => {
 
     try {
 
-      const token = localStorage.getItem("token");
+      
 
       const res = await axios.get(
         "https://smart-library-seat-reservation-system.onrender.com/api/bookings/dashboard-stats",
