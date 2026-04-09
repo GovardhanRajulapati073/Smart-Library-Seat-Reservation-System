@@ -97,6 +97,7 @@ function Dashboard() {
         {
           headers: {
             Authorization: `Bearer ${token}`
+            userid: userId
           }
         }
       );
