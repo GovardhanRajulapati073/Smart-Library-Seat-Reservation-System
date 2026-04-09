@@ -259,7 +259,6 @@ router.get("/dashboard-stats", async (req, res) => {
 
     await expireBookings();
 
-    // ✅ get userId safely (no JWT dependency issue)
     const userId = req.headers.userid || req.query.userId;
 
     // TOTAL SEATS
@@ -267,11 +266,11 @@ router.get("/dashboard-stats", async (req, res) => {
       "SELECT COUNT(*) FROM seats"
     );
 
-    // BOOKED SEATS (TODAY)
+    // BOOKED SEATS
     const bookedSeats = await pool.query(
       `
       SELECT COUNT(*) FROM bookings
-      WHERE status = 'booked'
+      WHERE status IN ('booked','confirmed')
       AND booking_date = CURRENT_DATE
       `
     );
@@ -282,9 +281,10 @@ router.get("/dashboard-stats", async (req, res) => {
     if (userId) {
       myBookings = await pool.query(
         `
-        SELECT COUNT(*) FROM bookings
-        WHERE user_id = $1
-        AND status IN = ('booked' , 'confirmed')
+        SELECT COUNT(*) 
+        FROM bookings 
+        WHERE user_id=$1 
+        AND status IN ('booked','confirmed')
         `,
         [userId]
       );
@@ -303,5 +303,6 @@ router.get("/dashboard-stats", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 module.exports = router;
