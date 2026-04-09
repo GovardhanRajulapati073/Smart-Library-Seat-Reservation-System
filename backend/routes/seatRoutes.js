@@ -109,7 +109,9 @@ router.post("/book", async (req, res) => {
 router.get("/section-counts", async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT section_id, COUNT(*) AS total_seats
+      SELECT 
+        section_id, 
+        COUNT(*)::int AS count   -- ✅ rename + fix type
       FROM seats
       GROUP BY section_id
       ORDER BY section_id
