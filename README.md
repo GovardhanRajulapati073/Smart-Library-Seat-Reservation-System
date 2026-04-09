@@ -200,9 +200,9 @@ FRONTEND_URL=
 
 ---
 
-## 👨‍💻 Author
+## 👨‍💻 Author's
 
-**Ganesh Rajulapati**
+**Govardhan Sai Ganesh Rajulapati, BG Sreevani, M Sai Pallavi**
 B.Tech CSE (Data Science)
 
 ---
