@@ -87,30 +87,28 @@ function Dashboard() {
   // ================= DASHBOARD STATS =================
 
   const fetchDashboardStats = async (token) => {
+  try {
 
-    try {
+    const userId = localStorage.getItem("userId"); // ✅ define here
 
-      
-
-      const res = await axios.get(
-        "https://smart-library-seat-reservation-system.onrender.com/api/bookings/dashboard-stats",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-            userid: userId
-          }
+    const res = await axios.get(
+      "https://smart-library-seat-reservation-system.onrender.com/api/bookings/dashboard-stats",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ comma added
+          userid: userId                    // ✅ now valid
         }
-      );
+      }
+    );
 
-      setStats(res.data);
+    console.log("Dashboard:", res.data); // ✅ debug
 
-    } catch {
+    setStats(res.data);
 
-      console.log("Error loading dashboard stats");
-
-    }
-
-  };
+  } catch (err) {
+    console.log("Error loading dashboard stats", err);
+  }
+};
 
 
 
