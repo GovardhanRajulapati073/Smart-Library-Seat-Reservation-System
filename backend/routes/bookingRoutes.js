@@ -254,63 +254,54 @@ router.get("/user/:userId", async (req, res) => {
 // DASHBOARD STATS
 // =====================================
 
-router.get("/dashboard-stats", authMiddleware, async (req, res) => {
-
+router.get("/dashboard-stats", async (req, res) => {
   try {
-
-    const role = req.user.role;
-
-    let sectionIds;
-
-    if (role === "faculty") {
-      sectionIds = [4];
-    } else {
-      sectionIds = [1,2,3];
-    }
 
     await expireBookings();
 
+    // ✅ get userId safely (no JWT dependency issue)
+    const userId = req.headers.userid || req.query.userId;
+
+    // TOTAL SEATS
     const totalSeats = await pool.query(
-      "SELECT COUNT(*) FROM seats WHERE section_id = ANY($1)",
-      [sectionIds]
+      "SELECT COUNT(*) FROM seats"
     );
 
-    const bookings = await pool.query(
-      `SELECT COUNT(*)
-       FROM bookings b
-       JOIN seats s ON b.seat_id = s.id
-       WHERE s.section_id = ANY($1)
-       AND b.status='booked'`,
-      [sectionIds]
+    // BOOKED SEATS (TODAY)
+    const bookedSeats = await pool.query(
+      `
+      SELECT COUNT(*) FROM bookings
+      WHERE status = 'booked'
+      AND booking_date = CURRENT_DATE
+      `
     );
 
-    const myBookings = await pool.query(
-      `SELECT COUNT(*) 
-       FROM bookings 
-       WHERE user_id=$1 
-       AND status='booked'`,
-      [req.user.id]
-    );
+    // MY BOOKINGS
+    let myBookings = { rows: [{ count: 0 }] };
+
+    if (userId) {
+      myBookings = await pool.query(
+        `
+        SELECT COUNT(*) FROM bookings
+        WHERE user_id = $1
+        AND status = 'booked'
+        `,
+        [userId]
+      );
+    }
 
     res.json({
-
-      totalSeats: parseInt(totalSeats.rows[0].count),
-
+      totalSeats: Number(totalSeats.rows[0].count),
       availableSeats:
-        parseInt(totalSeats.rows[0].count) -
-        parseInt(bookings.rows[0].count),
-
-      myBookings: parseInt(myBookings.rows[0].count)
-
+        Number(totalSeats.rows[0].count) -
+        Number(bookedSeats.rows[0].count),
+      myBookings: Number(myBookings.rows[0].count)
     });
 
   } catch (err) {
-
-    console.log(err.message);
-    res.status(500).send("Server error");
-
+    console.log("Dashboard Error:", err.message);
+    res.status(500).json({ error: err.message });
   }
-
 });
 
 module.exports = router;
