@@ -250,6 +250,7 @@ router.get("/user/:userId", async (req, res) => {
 });
 
 
+
 // =====================================
 // DASHBOARD STATS
 // =====================================
@@ -261,21 +262,21 @@ router.get("/dashboard-stats", async (req, res) => {
 
     const userId = req.headers.userid || req.query.userId;
 
-    // TOTAL SEATS
+    // ================= TOTAL SEATS =================
     const totalSeats = await pool.query(
       "SELECT COUNT(*) FROM seats"
     );
 
-    // BOOKED SEATS
+    // ================= BOOKED SEATS =================
+    // ❌ removed booking_date filter
     const bookedSeats = await pool.query(
       `
       SELECT COUNT(*) FROM bookings
       WHERE status IN ('booked','confirmed')
-      AND booking_date = CURRENT_DATE
       `
     );
 
-    // MY BOOKINGS
+    // ================= MY BOOKINGS =================
     let myBookings = { rows: [{ count: 0 }] };
 
     if (userId) {
@@ -290,11 +291,14 @@ router.get("/dashboard-stats", async (req, res) => {
       );
     }
 
+    // ================= RESPONSE =================
     res.json({
       totalSeats: Number(totalSeats.rows[0].count),
+
       availableSeats:
         Number(totalSeats.rows[0].count) -
         Number(bookedSeats.rows[0].count),
+
       myBookings: Number(myBookings.rows[0].count)
     });
 
@@ -303,6 +307,5 @@ router.get("/dashboard-stats", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
 
 module.exports = router;
